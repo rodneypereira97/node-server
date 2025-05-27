@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ToDo App</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <h1>Agregar Tarea</h1>
+  <form id="formTarea">
+    <input type="text" id="titulo" placeholder="Título de la tarea" required />
+    <button type="submit">Agregar</button>
+  </form>
+
+  <h2>Lista de Tareas</h2>
+  <ul id="listaTareas"></ul>
+
+  <script>
+    const form = document.getElementById('formTarea');
+    const lista = document.getElementById('listaTareas');
+  
+    // Crear tarea
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titulo = document.getElementById('titulo').value;
+  
+      const res = await fetch('http://localhost:3000/tareas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo })
+      });
+  
+      const nuevaTarea = await res.json();
+      agregarTareaDOM(nuevaTarea);
+      form.reset();
+    });
+  
+    // Mostrar tareas existentes
+    async function cargarTareas() {
+      lista.innerHTML = ''; // Limpia antes de cargar
+      const res = await fetch('http://localhost:3000/tareas');
+      const tareas = await res.json();
+      tareas.forEach(agregarTareaDOM);
+    }
+  
+    // Agregar tarea al DOM
+    function agregarTareaDOM(tarea) {
+        const li = document.createElement('li');
+      
+        li.innerHTML = `
+          <div class="tarea-info ${tarea.completada ? 'tarea-completada' : ''}">
+            ${tarea.id}. ${tarea.titulo}
+          </div>
+          <div>
+            <button onclick="toggleCompleta(${tarea.id}, ${tarea.completada})">✓</button>
+            <button onclick="eliminarTarea(${tarea.id})">🗑️</button>
+          </div>
+        `;
+      
+        lista.appendChild(li);
+      }
+      
+    // Eliminar tarea
+    async function eliminarTarea(id) {
+      await fetch(`http://localhost:3000/tareas/${id}`, {
+        method: 'DELETE'
+      });
+      cargarTareas();
+    }
+  
+    // Marcar como completada/incompleta
+    async function toggleCompleta(id, estadoActual) {
+      await fetch(`http://localhost:3000/tareas/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completada: !estadoActual })
+      });
+      cargarTareas();
+    }
+  
+    cargarTareas();
+  </script>
+  
+</body>
+</html>
