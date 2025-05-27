@@ -13,7 +13,7 @@ app.use('/tareas', require('./routes/tareas.routes'));
 const sequelize = require('./models');
 const Tarea = require('./models/tarea');
 
-sequelize.sync()
+sequelize.sync({ force: false })
   .then(() => console.log('Base de datos sincronizada'))
   .catch(err => console.error('Error al sincronizar DB', err));
 
