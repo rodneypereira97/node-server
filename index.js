@@ -6,9 +6,8 @@ const PORT = process.env.PORT || 3000;
 const path = require('path');
 
 // Esto sirve archivos estáticos desde la carpeta "public"
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 
 const sequelize = require('./models/index'); // 👈 ESTE ES EL CORRECTO
