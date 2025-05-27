@@ -2,6 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const path = require('path');
+
+// Esto sirve archivos estáticos desde la carpeta "public"
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 const sequelize = require('./models/index'); // 👈 ESTE ES EL CORRECTO
 const Tarea = require('./models/tarea'); // Importa el modelo después de sequelize
